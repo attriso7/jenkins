@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Installing httpd') {
+            steps {
+                sh 'sudo yum install httpd -y'
+                sh 'sudo systemctl start httpd'
+                sh 'chmod -R 777 /var/www/'
+                }
+        }
+
+        stage('Deploying index.html') {
+            steps {
+                dir('/var/www/html') {
+                    sh 'echo "this is a test file" | sudo tee index.html'
+                    
+                }
+            }
+        }
+    }
+}
+
