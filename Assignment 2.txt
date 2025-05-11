@@ -1,0 +1,36 @@
+pipeline {
+    agent {
+        any {
+            customWorkspace '/root/project'
+        }
+    }
+
+    environment {
+        TOMCAT_WEBAPPS = "/root/apache-tomcat-10.1.40/webapps"
+        MAVEN = "/root/apache-maven-3.9.9/bin/mvn"
+    }
+
+    stages {
+        stage('Clone Git Repo') {
+            steps {
+                git credentialsId: 'git', url: 'https://github.com/Shantanumajan6/project.git'
+            }
+        }
+
+        stage('Build with Maven') {
+            steps {
+                sh '${MAVEN} clean install'
+            }
+        }
+
+        stage('Deploy WAR') {
+            steps {
+                sh '''
+                    echo "Copying WAR file to Tomcat webapps..."
+                    cp target/LoginWebApp.war $TOMCAT_WEBAPPS/
+                '''
+            }
+        }
+    }
+}
+
