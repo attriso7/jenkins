@@ -1,0 +1,30 @@
+pipeline {
+    agent {
+        label {
+            label 'slv'
+            customWorkspace '/jenk-slave/work'
+        }
+    }
+
+   stages {
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
+        stage('Creating WAR File') {
+            steps {
+                git credentialsId: 'git', url: 'https://github.com/Shantanumajan6/project.git', branch: 'master'
+                sh 'sudo /root/apache-maven-3.9.9/bin/mvn clean install'
+            }
+        }
+
+        stage('Deploying') {
+            steps {
+                sh 'sudo cp /jenk-slave/work/target/LoginWebApp.war /server/apache-tomcat-10.1.41/webapps'
+            }
+        }
+    }
+}
+
